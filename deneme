@@ -5,96 +5,97 @@ import string
 import random
 import hashlib
 
-class Baglanti():
-    
+
+class Baglanti:
+
     def __init__(self):
         self.baglanti1()
+
     def baglanti1(self):
         self.baglantı = sqlite3.connect("database.db")
         self.cursor = self.baglantı.cursor()
         self.cursor.execute("create table if not exists üyeler(kullanıcı_ID TEXT,anaşifre TEXT)")
         self.cursor.execute("create table if not exists şifreler(anaşifre TEXT,Uygulamalar TEXT,Şifre TEXT)")
         self.baglantı.commit()
+
     def register1(self):
 
-        k_adı = str(anaekran.kullanici_girisi.text())
-        anasifre = str(anaekran.parola.text())
-        self.k_adı_hashing = hashlib.md5(k_adı.encode('utf-8')).hexdigest()
-        self.anasifre_hashing = hashlib.md5(parola.encode('utf-8')).hexdigest()
-        self.cursor.execute("select * from üyeler where kullanıcı_ID=?", (k_adı_hashing,))
+        self.k_adı = str(anaekran.kullanici_girisi.text())
+        self.anasifre = str(anaekran.parola.text())
+        self.k_adı_hashing = hashlib.md5(self.k_adı.encode('utf-8')).hexdigest()
+        self.anasifre_hashing = hashlib.md5(self.anasifre.encode('utf-8')).hexdigest()
+        self.cursor.execute("select * from üyeler where kullanıcı_ID=?", (self.k_adı_hashing,))
         data = self.cursor.fetchall()
-        if (len(k_adı) == 0 or len(anasifre) == 0):
-            anaekran_ui.yazi_alani.setText("Bilgileri doldurun")
-        elif (len(anasifre) < 6):
+        if (len(self.k_adı) == 0 or len(self.anasifre) == 0):
+            anaekran.yazi_alani.setText("Bilgileri doldurun")
+        elif (len(self.anasifre) < 6):
             anaekran.yazi_alani.setText("Şifre 6 karakterden az olamaz ")
         elif (len(data) != 0):
             anaekran.yazi_alani.setText("Boyle bır kullanıcı zaten var ")
 
-        elif (len(k_adı) != 0 and len(anasifre) != 0):
-            self.cursor.execute("insert into üyeler values(?,?)", (self.k_adı_hashing,self.anasifre_hashing))
+        elif (len(self.k_adı) != 0 and len(self.anasifre) != 0):
+            self.cursor.execute("insert into üyeler values(?,?)", (self.k_adı_hashing, self.anasifre_hashing))
             anaekran.yazi_alani.setText("Kayıt başarılı")
             self.baglantı.commit()
+
     def login(self):
-        
 
         self.cursor.execute("select * from üyeler where anaşifre=?", (self.anasifre_hashing,))
 
         data = self.cursor.fetchall()
 
-        if (len(adi) == 0 or len(par) == 0):
+        if (len(self.k_adı) == 0 or len(self.anasifre) == 0):
             anaekran.yazi_alani.setText("Lütfen bilgileri doldurun")
         elif (len(data) == 0):
             anaekran.yazi_alani.setText("Giriş başarısız")
         else:
-            anaekran.yazi_alani.setText("Hoşgeldiniz" + adi)
+            anaekran.yazi_alani.setText("Hoşgeldiniz" + self.k_adı)
             ıslemler.show()
+
     def sifre_goster(self):
 
-        
-        self.cursor.execute("select Uygulamalar,Şifre from şifreler where anaşifre=?", (self.ana_şifre_hashing,))
+        self.cursor.execute("select Uygulamalar,Şifre from şifreler where anaşifre=?", (self.anasifre_hashing,))
         liste = self.cursor.fetchall()
-        liste=dict(liste)
-        if(len(liste)!=0):
-            temp=""
-            temp2=""
+        liste = dict(liste)
+        if (len(liste) != 0):
+            temp = ""
+            temp2 = ""
             for i in liste.keys():
-                temp+=i+"\n"
+                temp += i + "\n"
             for j in liste.values():
-                temp2+=j+"\n"+"\n"
-            ıslemler.text_edit.setText(str(temp)+"\n"+str(temp2))
+                temp2 += j + "\n" + "\n"
+            ıslemler.text_edit.setText(str(temp) + "\n" + str(temp2))
+
     def sifreyi_kaydet1(self):
 
-        
         tanım = str(sifreuret.tanım_yeri.text())
         şifre = str(sifreuret.olusturulan_sifre_yeri.text())
-
-        
 
         self.cursor.execute("select * from üyeler where anaşifre=?", (self.anasifre_hashing,))
         liste = self.cursor.fetchall()
         if (len(liste) != 0):
 
-            self.cursor.execute("insert into şifreler values(?,?,?)", (self.anasifre_hashing, tanım, şifre))
+            self.cursor.execute("insert into şifreler values(?,?,?)", (self.anasifre_hashing,tanım,şifre))
             self.baglantı.commit()
-            sıfreuret.kaydedildi_yazisi.setText("Şifreniz kaydedildi")
+            sifreuret.kaydedildi_yazisi.setText("Şifreniz kaydedildi")
         else:
-            sıfreuret.kaydedildi_yazisi.setText("Ana şifreniz yanlış.Lütfen tekrar deneyiniz.")
+            sifreuret.kaydedildi_yazisi.setText("Ana şifreniz yanlış.Lütfen tekrar deneyiniz.")
+
     def sifre_sakla1(self):
 
-        
         sifre = str(sifresakla.sifre_yeri.text())
         tanım = str(sifresakla.uygulama_yeri.text())
 
-        
-        self.cursor.execute("select * from üyeler where anaşifre=?", (self.ana_şifre_hashing,))
+        self.cursor.execute("select * from üyeler where anaşifre=?", (self.anasifre_hashing,))
         liste = self.cursor.fetchall()
         if (len(liste) != 0):
 
-            self.cursor.execute("insert into şifreler values(?,?,?)", (self.ana_şifre_hashing, tanım, sifre))
+            self.cursor.execute("insert into şifreler values(?,?,?)", (self.anasifre_hashing,tanım,sifre))
             self.baglantı.commit()
             sifresakla.bilgi.setText("Şifreniz kaydedildi")
         else:
             sifresakla.bilgi.setText("Ana şifreniz yanlış tekrar deneyin")
+
     def sifre_degistir1(self):
 
         eski_sifre = str(sifredegistir.eski_sifre_yeri.text())
@@ -112,9 +113,10 @@ class Baglanti():
             sifredegistir.yazi.setText("Şifreniz başarıyla değiştirildi")
         else:
             sifredegistir.yazi.setText("İşlem başarısız")
-        
+
     def baglanti_kes(self):
         self.baglantı.close()
+
 
 class AnaEkran(QtWidgets.QWidget):
     def __init__(self):
@@ -123,9 +125,8 @@ class AnaEkran(QtWidgets.QWidget):
         baglanti.baglanti1()
 
     def init_ui(self):
-
         self.setWindowTitle("şifre yöneticisi")
-        self.setGeometry(200, 200,600,600)
+        self.setGeometry(200, 200, 600, 600)
 
         self.hosgeldiniz = QtWidgets.QLabel("Şifre Yöneticisine Hoşgeldiniz.")
 
@@ -163,17 +164,15 @@ class AnaEkran(QtWidgets.QWidget):
         self.show()
 
     def sifre_degistir(self):
-
         sifredegistir.show()
         self.close()
 
     def register(self):
-        
         baglanti.register1()
 
     def login(self):
-
         baglanti.login()
+
 
 class Islemler(QtWidgets.QWidget):
 
@@ -183,7 +182,6 @@ class Islemler(QtWidgets.QWidget):
         baglanti.baglanti1()
 
     def gorsel(self):
-
         self.setWindowTitle("İşlemler")
         self.setGeometry(200, 200, 600, 600)
 
@@ -218,7 +216,6 @@ class Islemler(QtWidgets.QWidget):
         self.close()
 
     def sifre_goster(self):
-
         baglanti.sifre_goster()
 
     def diger_sifre(self):
@@ -289,7 +286,9 @@ class Sifreuret(QtWidgets.QWidget):
         self.girise_dön.clicked.connect(self.giris1)
         self.geri_dön.clicked.connect(self.geri1)
         self.kaydet_buton.clicked.connect(self.sifreyi_kaydet1)
-        self.sifre_uret.clicked.connect(lambda: self.sifre_uret1(self.buyuk_harf.isChecked(),self.kucuk_harf.isChecked(),self.karakter.isChecked(), self.sayı.isChecked(), self.olusturulan_sifre_yeri))
+        self.sifre_uret.clicked.connect(
+            lambda: self.sifre_uret1(self.buyuk_harf.isChecked(), self.kucuk_harf.isChecked(),
+                                     self.karakter.isChecked(), self.sayı.isChecked(), self.olusturulan_sifre_yeri))
 
     def giris1(self):
         anaekran.show()
@@ -318,8 +317,7 @@ class Sifreuret(QtWidgets.QWidget):
             chars += ozel_karakterler
         if sayı:
             chars += string.digits
-        
-            
+
         temp = ""
 
         for i in range(uzunluk):
@@ -334,14 +332,12 @@ class Sifreuret(QtWidgets.QWidget):
 class Sifresakla(QtWidgets.QWidget):
 
     def __init__(self):
-
         super().__init__()
         baglanti.baglanti1()
 
         self.islemler()
 
     def islemler(self):
-
         self.setWindowTitle("Şifreleri sakla")
         self.setGeometry(200, 200, 600, 600)
 
@@ -390,21 +386,18 @@ class Sifresakla(QtWidgets.QWidget):
         self.close()
 
     def sifre_sakla1(self):
-
         baglanti.sifre_sakla1()
 
 
 class Sifredegistir(QtWidgets.QWidget):
 
     def __init__(self):
-
         super().__init__()
         baglanti.baglanti1()
 
         self.islemler()
 
     def islemler(self):
-
         self.eski_sifre = QtWidgets.QLabel("Eski şifrenizi girin")
         self.eski_sifre_yeri = QtWidgets.QLineEdit()
         self.eski_sifre_yeri.setEchoMode(QtWidgets.QLineEdit.Password)
@@ -442,19 +435,17 @@ class Sifredegistir(QtWidgets.QWidget):
         self.close()
 
     def sifre_degistir1(self):
-
         baglanti.sifre_degistir1()
 
 
 app = QtWidgets.QApplication(sys.argv)
 
-baglanti=Baglanti()
+baglanti = Baglanti()
 anaekran = AnaEkran()
 ıslemler = Islemler()
 sifreuret = Sifreuret()
 sifresakla = Sifresakla()
 sifredegistir = Sifredegistir()
-
 
 sys.exit(app.exec_())
 
